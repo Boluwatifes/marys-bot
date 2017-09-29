@@ -1,0 +1,34 @@
+{
+  "name": "marys-bot",
+  "version": "1.0.0",
+  "description": "Just a test service",
+  "main": "app.js",
+  "scripts": {
+    "test": "jasmine",
+    "start": "babel-node -- app.js",
+    "start:dev": "nodemon --watch app.js --exec babel-node -- app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Boluwatifes/marys-bot.git"
+  },
+  "author": "Daniel Bamidele",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Boluwatifes/marys-bot/issues"
+  },
+  "homepage": "https://github.com/Boluwatifes/marys-bot#readme",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "body-parser": "^1.18.2",
+    "eslint": "^4.7.2",
+    "express": "^4.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}
