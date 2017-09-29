@@ -12,8 +12,8 @@ app.get('/', (req, res) => {
 })
 
 app.post('/strain', (req, res) => {
-  const { searchQuery } = req.body;
-  axios.get(`https://www.cannabisreports.com/api/v1.0/strains/search/${searchQuery}`)
+  const { searchString } = req.body;
+  axios.get(`https://www.cannabisreports.com/api/v1.0/strains/search/${searchString}`)
   .then(({ data }) => {
     let result;
     if (data.data.length > 0) {
