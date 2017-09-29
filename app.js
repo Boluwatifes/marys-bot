@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+import axios from 'axios';
 
 const app = express();
 
@@ -12,12 +13,27 @@ app.get('/', (req, res) => {
 
 app.post('/strain', (req, res) => {
   const { searchQuery } = req.body;
-  res.send({
-    status: 200,
-    searchQuery
-  });
+  axios.get(`https://www.cannabisreports.com/api/v1.0/strains/search/${searchQuery}`)
+  .then(({ data }) => {
+    let result;
+    if (data.data.length > 0) {
+      result = data.data.map((res) => (
+        { text: res.name }
+      ));
+    } else {
+      result = [{ text: 'No strain found' }];
+    }
+    console.log(result);
+    res.send(result);
+  }, ({ response }) => {
+    res.send({
+      status: 400,
+      error: response.data
+    });
+  })
+  
 });
 
-app.listen(4000, () => {
+app.listen(3000, () => {
   console.log('App started here');
 });
