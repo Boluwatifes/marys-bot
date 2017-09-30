@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
   res.send('Welcome to marys api');
-})
+});
 
 app.post('/strain', (req, res) => {
   const { searchString } = req.body;
@@ -17,45 +17,62 @@ app.post('/strain', (req, res) => {
   .then(({ data }) => {
     let result;
     if (data.data.length > 0) {
-      result = data.data.map((res) => (
+      result = data.data.map(res => (
+        {
+          title: res.name,
+          image_url: res.image,
+          subtitle: `Seed Company name: ${res.seedCompany.name}, Ucpc: ${res.seedCompany.ucpc}. Link: ${res.link}`,
+          buttons: [
+            {
+              url: `https://marys-api.herokuapp.com/detail?url=${res.link}`,
+              type: 'json_plugin_url',
+              title: 'Get Details'
+            }
+          ]
+        }
+      ));
+      res.send([
         { attachment: {
           type: 'template',
           payload: {
-            template_type: 'button',
-            text: res.name,
-            buttons: [
-              {
-                url: `https://marys-api.herokuapp.com/detail?url=${res.link}`,
-                type:'json_plugin_url',
-                title:'Get Details'
-              }
+            template_type: 'generic',
+            elements: [
+              ...result
             ]
           }
         } }
-      ));
+      ]);
     } else {
-      result = [{ text: 'No strain found' }];
+      res.send([{ text: 'No strain found' }]);
     }
-    console.log(result);
-    res.send(result);
   }, ({ response }) => {
     res.send({
       status: 400,
       error: response.data
     });
-  })  
-});
-
-app.get('/detail', (req, res) => {
-  const { url } = req.query;
-
-  res.send({ text: url });
+  });
 });
 
 app.post('/detail', (req, res) => {
   const { url } = req.query;
 
-  res.send([{ text: url }]);
+  /**
+   * Get strain details from the api
+   * @method getStrainDetails
+   * @param {string} strain
+   * @returns {promise} - Promise containing the data to be resolved
+   */
+  function getStrainDetails(strain) {
+    return Promise.all([
+      axios.get('https://www.cannabisreports.com/api/v1.0/strains/VUJCJ4TYMG000000000000000/effectsFlavors'),
+      axios.get('https://www.cannabisreports.com/api/v1.0/strains/VUJCJ4TYMG000000000000000/reviews')
+    ]);
+  }
+
+  getStrainDetails().then((result) => {
+    console.log(result[0].data, 'uefjsfnjsnfsjnfsjfnsjf', result[1].data);
+    res.send([{ text: url }]);
+  });
 });
 
 app.listen(process.env.PORT || 3000, () => {
