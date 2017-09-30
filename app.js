@@ -64,14 +64,39 @@ app.post('/detail', (req, res) => {
    */
   function getStrainDetails(strain) {
     return Promise.all([
-      axios.get('https://www.cannabisreports.com/api/v1.0/strains/VUJCJ4TYMG000000000000000/effectsFlavors'),
-      axios.get('https://www.cannabisreports.com/api/v1.0/strains/VUJCJ4TYMG000000000000000/reviews')
+      axios.get(`${strain}`),
+      axios.get(`${strain}/effectsFlavors`),
+      axios.get(`${strain}/seedCompany`)
     ]);
   }
 
-  getStrainDetails().then((result) => {
-    console.log(result[0].data, 'uefjsfnjsnfsjnfsjfnsjf', result[1].data);
-    res.send([{ text: url }]);
+  getStrainDetails(url).then((result) => {
+    // console.log(result[0].data, 'uefjsfnjsnfsjnfsjfnsjf', result[1].data);
+    let text = `Details for ${result[0].data.data.name}. \n \n `;
+    if (result[1].data.data) {
+      const data = result[1].data.data;
+      text += 'Effects Flavours \n';
+      for (const n in data) {
+        text += `${n}: ${data[n]}. \n `;
+      }
+      text += '\n ';
+    }
+
+    if (result[2].data.data) {
+      const companyDetails = result[2].data.data;
+      text += 'Company Detail. \n';
+      text += `Name: ${companyDetails.name}. \n `;
+      if (companyDetails.lineage) {
+        const lineage = companyDetails.lineage;
+        text += 'Lineage -: \n ';
+        for (const i in lineage) {
+          text += `${i}. \n `;
+        }
+      }
+    }
+    res.send([{
+      text
+    }]);
   });
 });
 
