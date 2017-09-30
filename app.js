@@ -18,7 +18,20 @@ app.post('/strain', (req, res) => {
     let result;
     if (data.data.length > 0) {
       result = data.data.map((res) => (
-        { text: res.name }
+        { attachment: {
+          type: 'template',
+          payload: {
+            template_type: 'button',
+            text: res.name,
+            buttons: [
+              {
+                url: `https://marys-api.herokuapp.com/detail?url=${res.link}`,
+                type:'json_plugin_url',
+                title:'Get Details'
+              }
+            ]
+          }
+        } }
       ));
     } else {
       result = [{ text: 'No strain found' }];
@@ -30,8 +43,19 @@ app.post('/strain', (req, res) => {
       status: 400,
       error: response.data
     });
-  })
-  
+  })  
+});
+
+app.get('/detail', (req, res) => {
+  const { url } = req.query;
+
+  res.send({ text: url });
+});
+
+app.post('/detail', (req, res) => {
+  const { url } = req.query;
+
+  res.send([{ text: url }]);
 });
 
 app.listen(process.env.PORT || 3000, () => {
